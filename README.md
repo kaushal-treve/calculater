@@ -81,31 +81,6 @@ No build tools, package managers, or dependencies to install. Clone or download 
 ```bash
 git clone <your-repo-url>
 cd calculator
-```
-
-## Running locally
-
-Because the app is just static files, any of the following work:
-
-**Option 1 — open directly**
-Double-click `index.html`, or open it from your browser with `File > Open`.
-
-**Option 2 — local server (recommended, avoids any browser file:// quirks)**
-```bash
-# Python 3
-python3 -m http.server 8000
-
-# then visit http://localhost:8000
-```
-
-**Option 3 — VS Code Live Server extension**
-Right-click `index.html` → "Open with Live Server".
-
-## Deploying to GitHub Pages
-
-1. Push this folder to a GitHub repository.
-2. In the repo settings, enable **Pages** and point it at the branch/folder containing `index.html`.
-3. No build step is required — the site is ready to serve as-is.
 
 ## Future improvements
 
