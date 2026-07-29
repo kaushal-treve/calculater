@@ -1,0 +1,698 @@
+/* =========================================================================
+   CALCULATOR — STYLE SHEET
+   Design language: "precision instrument" — a machined, keycap-driven
+   readout panel rather than a glass panel. Tokens are defined once as CSS
+   custom properties so the dark/light themes stay perfectly in sync.
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   1. DESIGN TOKENS
+   ------------------------------------------------------------------------- */
+:root {
+  /* Dark theme (default) */
+  --bg-deep: #14151a;
+  --bg-panel: #1d1f26;
+  --bg-panel-2: #191b21;
+  --bg-key: #262931;
+  --bg-key-hover: #2f333d;
+  --bg-key-active: #20232a;
+
+  --accent: #5b8cff;
+  --accent-strong: #3f6bef;
+  --accent-soft: rgba(91, 140, 255, 0.14);
+  --danger: #ff6b5b;
+  --danger-soft: rgba(255, 107, 91, 0.12);
+
+  --text-primary: #f3f1ec;
+  --text-secondary: #9096a1;
+  --text-faint: #5b606c;
+  --text-on-accent: #f6f8ff;
+
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  --shadow-color: 0deg 0% 0%;
+  --key-shadow-1: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+  --key-shadow-2: 0 -1px 0 rgba(0, 0, 0, 0.35) inset;
+  --panel-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.55), 0 10px 24px -12px rgba(0, 0, 0, 0.4);
+
+  --font-display: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --radius-lg: 26px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+
+  color-scheme: dark;
+}
+
+/* Light theme overrides — applied via [data-theme="light"] on <html> */
+[data-theme="light"] {
+  --bg-deep: #edeae2;
+  --bg-panel: #ffffff;
+  --bg-panel-2: #f7f5f0;
+  --bg-key: #f4f2ec;
+  --bg-key-hover: #eae7dd;
+  --bg-key-active: #e3e0d5;
+
+  --accent: #3b62e0;
+  --accent-strong: #2c4fc4;
+  --accent-soft: rgba(59, 98, 224, 0.1);
+  --danger: #e5493a;
+  --danger-soft: rgba(229, 73, 58, 0.09);
+
+  --text-primary: #1b1c1f;
+  --text-secondary: #62666f;
+  --text-faint: #9a9da5;
+  --text-on-accent: #ffffff;
+
+  --border-subtle: rgba(20, 20, 20, 0.07);
+  --border-strong: rgba(20, 20, 20, 0.14);
+
+  --key-shadow-1: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  --key-shadow-2: 0 -1px 0 rgba(0, 0, 0, 0.06) inset;
+  --panel-shadow: 0 30px 60px -24px rgba(30, 25, 10, 0.22), 0 8px 20px -10px rgba(30, 25, 10, 0.12);
+
+  color-scheme: light;
+}
+
+/* -------------------------------------------------------------------------
+   2. RESET & BASE
+   ------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.45s ease, color 0.45s ease;
+  animation: page-fade-in 0.6s ease both;
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Subtle ambient background texture: a faint radial glow behind the card */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(60% 50% at 50% 12%, var(--accent-soft), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.45s ease;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Visible, high-contrast focus state for keyboard navigation */
+:focus-visible {
+  outline: 2.5px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* -------------------------------------------------------------------------
+   3. TOP BAR
+   ------------------------------------------------------------------------- */
+.topbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px clamp(16px, 5vw, 40px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.brand-name {
+  color: var(--text-primary);
+}
+
+.brand-name-accent {
+  color: var(--accent);
+}
+
+.topbar-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: var(--bg-key-hover);
+  border-color: var(--border-strong);
+}
+
+.icon-btn:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.icon-btn .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-primary);
+}
+
+/* Icon swap: sound + theme icons cross-fade based on state */
+.icon-sound-off,
+.icon-moon {
+  display: none;
+}
+
+#soundToggle[aria-pressed="false"] .icon-sound-on {
+  display: none;
+}
+#soundToggle[aria-pressed="false"] .icon-sound-off {
+  display: block;
+}
+
+#themeToggle[aria-pressed="true"] .icon-sun {
+  display: none;
+}
+#themeToggle[aria-pressed="true"] .icon-moon {
+  display: block;
+}
+
+/* -------------------------------------------------------------------------
+   4. LAYOUT SHELL
+   ------------------------------------------------------------------------- */
+.app {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px clamp(16px, 5vw, 40px) 40px;
+}
+
+.console {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 380px;
+}
+
+/* -------------------------------------------------------------------------
+   5. HISTORY PANEL
+   ------------------------------------------------------------------------- */
+.history-panel {
+  width: 260px;
+  margin-right: -260px;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-right: -260px;
+  transform: translateX(12px);
+  transition: opacity 0.3s ease, transform 0.3s ease, margin-right 0.3s ease;
+}
+
+.console.history-open .history-panel {
+  margin-right: 16px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.history-head h2 {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.text-btn:hover {
+  background: var(--accent-soft);
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 420px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-list li:not(.history-empty) {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.history-list li:not(.history-empty):hover {
+  background: var(--bg-key-hover);
+  border-color: var(--border-strong);
+}
+
+.history-list .history-expr {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  margin-bottom: 3px;
+}
+
+.history-list .history-val {
+  display: block;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.history-empty {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  padding: 8px 2px;
+}
+
+/* -------------------------------------------------------------------------
+   6. CALCULATOR CARD
+   ------------------------------------------------------------------------- */
+.calculator {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--panel-shadow);
+  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* -- Display / readout -------------------------------------------------- */
+.display {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px 18px;
+  margin-bottom: 16px;
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.display-toprow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 5px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip-btn:hover {
+  background: var(--bg-key-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.chip-btn.copied {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.memory-indicator {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 1px 6px;
+  letter-spacing: 0.06em;
+}
+
+.display-expression {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-align: right;
+  min-height: 1.3em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+.display-expression::-webkit-scrollbar {
+  display: none;
+}
+
+.display-result-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.display-result {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.1rem, 9vw, 2.75rem);
+  line-height: 1.05;
+  color: var(--text-primary);
+  text-align: right;
+  word-break: break-all;
+  transition: color 0.2s ease;
+}
+
+.display-result.is-error {
+  color: var(--danger);
+  font-size: 1.5rem;
+}
+
+.display-cursor {
+  width: 3px;
+  height: clamp(1.6rem, 6vw, 2.1rem);
+  background: var(--accent);
+  border-radius: 2px;
+  animation: blink 1.15s steps(1) infinite;
+}
+
+@keyframes blink {
+  0%, 45% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* -- Memory row ----------------------------------------------------------*/
+.memory-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.mem-btn {
+  padding: 8px 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+  background: var(--bg-key);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.mem-btn:hover {
+  background: var(--bg-key-hover);
+  color: var(--text-primary);
+}
+
+.mem-btn:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+.mem-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------------
+   7. KEYPAD — "keycap" instrument styling (signature element)
+   ------------------------------------------------------------------------- */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.key {
+  position: relative;
+  overflow: hidden;
+  height: 62px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-key);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  box-shadow: var(--key-shadow-1), var(--key-shadow-2), 0 1px 0 var(--border-subtle);
+  transition: background-color 0.15s ease, transform 0.08s ease, box-shadow 0.08s ease,
+    border-color 0.15s ease;
+}
+
+.key:hover {
+  background: var(--bg-key-hover);
+  border-color: var(--border-strong);
+}
+
+/* Physical keycap press: sinks down and loses its highlight */
+.key:active,
+.key.is-pressed {
+  transform: translateY(2px);
+  background: var(--bg-key-active);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.key-op {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.key-op:hover {
+  background: var(--accent-soft);
+}
+
+.key-func {
+  font-family: var(--font-ui);
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.key-danger {
+  color: var(--danger);
+}
+
+.key-danger:hover {
+  background: var(--danger-soft);
+}
+
+.key-equals {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: var(--accent-strong);
+  font-weight: 700;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 10px 22px -10px var(--accent);
+}
+
+.key-equals:hover {
+  background: var(--accent-strong);
+}
+
+.key-equals:active,
+.key-equals.is-pressed {
+  background: var(--accent-strong);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Ripple effect: a radial pulse from the point of activation */
+.key .ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  animation: ripple-expand 0.55s ease-out forwards;
+}
+
+[data-theme="light"] .key .ripple {
+  background: rgba(20, 20, 20, 0.12);
+}
+
+@keyframes ripple-expand {
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.hint {
+  margin: 16px 2px 2px;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  letter-spacing: 0.01em;
+}
+
+/* -------------------------------------------------------------------------
+   8. FOOTER
+   ------------------------------------------------------------------------- */
+.page-footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 4px 16px 22px;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+/* -------------------------------------------------------------------------
+   9. RESPONSIVE BREAKPOINTS
+   ------------------------------------------------------------------------- */
+
+/* Tablet and up: allow the history panel room beside the calculator */
+@media (min-width: 760px) {
+  .console {
+    max-width: 380px;
+  }
+}
+
+/* Small phones: tighten paddings and key height */
+@media (max-width: 380px) {
+  .calculator {
+    padding: 16px;
+  }
+  .key {
+    height: 54px;
+    font-size: 1.1rem;
+  }
+  .display-result {
+    font-size: clamp(1.8rem, 10vw, 2.3rem);
+  }
+}
+
+/* When history panel opens on narrow viewports, present it as an overlay
+   instead of squeezing the calculator */
+@media (max-width: 700px) {
+  .console.history-open {
+    position: relative;
+  }
+  .console.history-open .history-panel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin-right: 0;
+    left: 0;
+    width: auto;
+    z-index: 5;
+    box-shadow: var(--panel-shadow);
+  }
+  .console.history-open .calculator {
+    visibility: hidden;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   10. REDUCED MOTION
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
