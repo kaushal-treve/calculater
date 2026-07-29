@@ -2,9 +2,6 @@
 
 A modern, accessible calculator web app built with plain **HTML, CSS, and vanilla JavaScript** — no frameworks, no build step, no dependencies beyond a Google Fonts stylesheet link. Open `index.html` and it runs.
 
-![Calculator screenshot placeholder](screenshot.png)
-*(Replace `screenshot.png` with an actual screenshot of the app before publishing.)*
-
 ## Overview
 
 This calculator was designed around a "precision instrument" aesthetic — a machined, keycap-driven control panel rather than a generic glassmorphism card. Every button presses down like a physical key, the readout mimics an LCD register with a blinking cursor, and the whole app runs on ~0 KB of JavaScript dependencies.
